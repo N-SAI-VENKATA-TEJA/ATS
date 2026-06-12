@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -46,8 +46,8 @@
         );
 
         --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
-          0 0 20px rgba(34, 211, 238, 0.15);
+        --shadow-lg:
+          0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.15);
 
         --r-lg: 24px;
         --r-md: 16px;
@@ -77,7 +77,7 @@
         height: 100vh;
         z-index: -2;
         /* UPDATED: High-Definition (4K) Image of AI Robot Head with Neural Networks */
-        background-image: url("/static/8152da67-32b6-4eb2-abb3-cd1afaa8b730.jpg");
+        background-image: url("/static/Human_Intelligence.jpg");
         background-size: cover;
         background-position: center center;
         background-repeat: no-repeat;
@@ -369,7 +369,8 @@
           rgba(34, 211, 238, 0.4),
           transparent 40%
         );
-        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
           linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
@@ -1293,7 +1294,11 @@
                 comprehensive breakdown of your hiring potential.
               </p>
               <button
-                onclick="document.querySelector('.hero').scrollIntoView({behavior: 'smooth'})"
+                onclick="
+                  document
+                    .querySelector('.hero')
+                    .scrollIntoView({ behavior: 'smooth' })
+                "
                 class="btn"
                 style="background: white; color: #020617"
               >
@@ -1533,7 +1538,7 @@
             }
           });
         },
-        { threshold: 0.15 }
+        { threshold: 0.15 },
       );
 
       document

@@ -3,6 +3,9 @@ from flask import Flask, request, jsonify, render_template
 from google import genai
 import PyPDF2
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 # ==============================
 # CONFIG
@@ -10,7 +13,10 @@ from flask_cors import CORS
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-client = genai.Client(api_key="")
+api_key = os.getenv("API_KEY")
+if not api_key:
+    raise ValueError("API_KEY is not set in the environment variables. Please check your .env file.")
+client = genai.Client(api_key=api_key)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
@@ -21,7 +27,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # ==============================
 @app.route("/")
 def home():
-    return render_template("template1.html")
+    return render_template("template3.html")
 
 # ==============================
 # PDF PARSING
