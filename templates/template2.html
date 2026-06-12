@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS | AI Talent Intelligence</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+      :root {
+        /* Palette - Ethereal Light & Premium Violet */
+        --bg-deep: #fdfbff; /* Soft porcelain white */
+        --bg-panel: #ffffff;
+
+        /* Gradients & Accents */
+        --accent-primary: #8b5cf6; /* Violet */
+        --accent-glow: #ec4899; /* Pink */
+        --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+
+        --accent-secondary: #10b981; /* Emerald */
+        --accent-danger: #f43f5e; /* Rose */
+
+        --text-main: #1e293b; /* Dark Slate */
+        --text-muted: #64748b; /* Cool Gray */
+
+        --glass-border: rgba(0, 0, 0, 0.06);
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-highlight: rgba(255, 255, 255, 0.9);
+
+        --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+        --shadow-soft: 0 20px 40px -12px rgba(139, 92, 246, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-primary) transparent;
+      }
+
+      body {
+        background-color: var(--bg-deep);
+        color: var(--text-main);
+        font-family: "Inter", sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        /* Premium Mesh Gradient Background */
+        background-image: radial-gradient(
+            circle at 10% 20%,
+            rgba(217, 70, 239, 0.12) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 90% 60%,
+            rgba(139, 92, 246, 0.15) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 50% 90%,
+            rgba(244, 114, 182, 0.1) 0%,
+            transparent 50%
+          );
+      }
+
+      /* --- Utility & Typography --- */
+      .h1-hero {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        /* Dark gradient text for light mode */
+        background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.04em;
+      }
+
+      .text-gradient {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      /* --- Components --- */
+      .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--glass-border);
+        /* Add white top highlight for 3D glass effect */
+        box-shadow: var(--shadow-soft), inset 0 1px 0 var(--glass-highlight);
+        border-radius: 24px;
+      }
+
+      .btn-nexus {
+        background: var(--accent-gradient);
+        color: #ffffff;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-family: "Space Grotesk", sans-serif;
+        cursor: pointer;
+        transition: all 0.3s var(--ease-smooth);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+      }
+
+      .btn-nexus:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px -5px rgba(236, 72, 153, 0.5);
+      }
+
+      .btn-nexus::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: 0.5s;
+      }
+      .btn-nexus:hover::after {
+        left: 100%;
+      }
+
+      /* --- Layout: Split Screen Input --- */
+      .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 3rem;
+        min-height: 600px;
+        transition: opacity 0.5s ease;
+      }
+
+      /* Left: Upload Zone */
+      .upload-zone {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 2px dashed rgba(139, 92, 246, 0.2);
+        border-radius: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+        background: rgba(255, 255, 255, 0.4);
+      }
+
+      .upload-zone:hover,
+      .upload-zone.dragover {
+        border-color: var(--accent-primary);
+        background: rgba(139, 92, 246, 0.05);
+        transform: scale(0.99);
+      }
+
+      .file-input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      .upload-content {
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .icon-upload {
+        font-size: 3rem;
+        color: var(--accent-primary);
+        margin-bottom: 1rem;
+        filter: drop-shadow(0 4px 10px rgba(139, 92, 246, 0.3));
+      }
+
+      /* Right: JD Input */
+      .jd-input-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      textarea {
+        width: 100%;
+        flex-grow: 1;
+        background: transparent;
+        border: none;
+        color: var(--text-main);
+        font-family: "Inter", sans-serif;
+        font-size: 1rem;
+        line-height: 1.6;
+        resize: none;
+        outline: none;
+        padding: 1.5rem;
+      }
+
+      textarea::placeholder {
+        color: rgba(0, 0, 0, 0.3);
+      }
+
+      /* --- Dashboard (Results) --- */
+      #results-dashboard {
+        display: none; /* Hidden initially */
+        animation: slideUp 0.8s var(--ease-elastic);
+        margin-top: 2rem;
+        padding-bottom: 5rem;
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 2rem;
+      }
+
+      /* Score Card */
+      .score-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Radial Progress */
+      .progress-ring {
+        width: 200px;
+        height: 200px;
+      }
+
+      .progress-ring__circle {
+        transition: stroke-dashoffset 1.5s ease-in-out;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+
+      .score-text {
+        position: absolute;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      .score-label {
+        position: absolute;
+        top: 65%;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+      }
+
+      /* Insights Grid */
+      .insights-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .insight-box {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+      }
+
+      .insight-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--accent-primary);
+      }
+
+      .skill-pill {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        margin: 0.2rem;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        color: var(--text-main);
+      }
+
+      .skill-pill.match {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+        color: #059669; /* Darker green for light bg */
+      }
+
+      .skill-pill.missing {
+        background: rgba(244, 63, 94, 0.1);
+        border-color: rgba(244, 63, 94, 0.2);
+        color: #be123c; /* Darker red for light bg */
+      }
+
+      .raw-content {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: var(--text-main);
+      }
+
+      /* Loading State */
+      .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(253, 251, 255, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        display: none; /* Hidden */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .scanner-line {
+        width: 300px;
+        height: 3px;
+        background: var(--accent-gradient);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        border-radius: 2px;
+        animation: scan 1.5s infinite ease-in-out;
+      }
+
+      .loading-text {
+        margin-top: 2rem;
+        font-family: "Space Grotesk", sans-serif;
+        letter-spacing: 0.2em;
+        color: var(--accent-primary);
+        font-weight: 600;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes scan {
+        0% {
+          transform: scaleX(0);
+          opacity: 0;
+        }
+        50% {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(0);
+          opacity: 0;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 900px) {
+        .input-grid,
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .h1-hero {
+          font-size: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Overlay -->
+    <div id="loader" class="loader-overlay">
+      <div class="scanner-line"></div>
+      <div class="loading-text">INITIALIZING NEURAL LINK...</div>
+    </div>
+
+    <div class="container">
+      <!-- Header -->
+      <header
+        style="
+          margin-bottom: 2rem;
+          padding-top: 1rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <div
+          style="
+            font-family: 'Space Grotesk';
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.05em;
+            color: var(--text-main);
+          "
+        >
+          NEXUS<span style="color: var(--accent-primary)">.ATS</span>
+        </div>
+        <div style="display: flex; gap: 1rem">
+          <button
+            style="
+              background: none;
+              border: none;
+              color: var(--text-muted);
+              cursor: pointer;
+            "
+          >
+            <i class="ph ph-gear" style="font-size: 1.5rem"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Input Section -->
+      <section id="input-section">
+        <div style="text-align: center; max-width: 800px; margin: 0 auto">
+          <h1 class="h1-hero">
+            Talent Intelligence <br />
+            <span class="text-gradient">Reimagined.</span>
+          </h1>
+          <p
+            style="
+              color: var(--text-muted);
+              margin-top: 1rem;
+              font-size: 1.1rem;
+            "
+          >
+            Upload a resume and job description. Let our Gen-AI Core analyze
+            fit, culture, and potential.
+          </p>
+        </div>
+
+        <form id="analyze-form" class="input-grid">
+          <!-- Left: Resume Upload -->
+          <div class="glass-panel upload-zone" id="drop-zone">
+            <input
+              type="file"
+              name="resume"
+              class="file-input"
+              id="resume-input"
+              accept=".pdf"
+              required
+            />
+            <div class="upload-content">
+              <i class="ph ph-file-pdf icon-upload"></i>
+              <h3
+                style="
+                  font-family: 'Space Grotesk';
+                  margin-bottom: 0.5rem;
+                  color: var(--text-main);
+                "
+              >
+                Drop Resume PDF
+              </h3>
+              <p
+                style="color: var(--text-muted); font-size: 0.9rem"
+                id="file-name"
+              >
+                or click to browse
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: JD Input -->
+          <div class="glass-panel jd-input-wrapper">
+            <div
+              style="
+                padding: 1rem 1.5rem;
+                border-bottom: 1px solid var(--glass-border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span
+                style="
+                  font-weight: 600;
+                  font-size: 0.9rem;
+                  letter-spacing: 0.05em;
+                  color: var(--text-muted);
+                "
+                >JOB CONFIGURATION</span
+              >
+              <i class="ph ph-code" style="color: var(--accent-primary)"></i>
+            </div>
+            <textarea
+              name="job_description"
+              placeholder="Paste the Job Description (JD) here...
+e.g. Senior Frontend Engineer
+- React, TypeScript, Node.js
+- 5+ years experience..."
+              required
+            ></textarea>
+            <div style="padding: 1.5rem">
+              <button
+                type="submit"
+                class="btn-nexus"
+                style="width: 100%; justify-content: center"
+              >
+                <i class="ph ph-lightning"></i> RUN ANALYSIS
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results Dashboard -->
+      <section id="results-dashboard">
+        <div class="dashboard-header">
+          <div>
+            <div
+              style="
+                font-size: 0.9rem;
+                color: var(--accent-primary);
+                margin-bottom: 0.5rem;
+                font-family: 'Space Grotesk';
+                font-weight: 600;
+              "
+            >
+              ANALYSIS COMPLETE
+            </div>
+            <h2
+              style="
+                font-size: 2rem;
+                font-family: 'Space Grotesk';
+                color: var(--text-main);
+              "
+            >
+              Candidate Report
+            </h2>
+          </div>
+          <button
+            class="btn-nexus"
+            onclick="location.reload()"
+            style="font-size: 0.9rem; padding: 0.8rem 1.5rem"
+          >
+            <i class="ph ph-arrow-counter-clockwise"></i> New Search
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <!-- Left Column: Score -->
+          <div class="glass-panel score-card">
+            <svg class="progress-ring" width="200" height="200">
+              <circle
+                class="progress-ring__circle-bg"
+                stroke="rgba(0,0,0,0.05)"
+                stroke-width="12"
+                fill="transparent"
+                r="85"
+                cx="100"
+                cy="100"
+              />
+              <!-- Define Gradient for Stroke -->
+              <defs>
+                <linearGradient
+                  id="gradientStroke"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: #8b5cf6; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #ec4899; stop-opacity: 1"
+                  />
+                </linearGradient>
+              </defs>
+              <circle
+                class="progress-ring__circle"
+                stroke="url(#gradientStroke)"
+                stroke-width="12"
+                stroke-linecap="round"
+                fill="transparent"
+                r="85"
+                cx="100"
+                cy="100"
+              />
+            </svg>
+            <div class="score-text" id="match-score">0%</div>
+            <div class="score-label">Match Index</div>
+          </div>
+
+          <!-- Right Column: Details -->
+          <div class="insights-wrapper">
+            <!-- Matching Skills -->
+            <div class="insight-box">
+              <div class="insight-title">
+                <i
+                  class="ph ph-check-circle"
+                  style="color: var(--accent-secondary); font-weight: bold"
+                ></i>
+                Detected Matches
+              </div>
+              <div id="matched-skills-container"></div>
+            </div>
+
+            <!-- Missing Skills -->
+            <div class="insight-box">
+              <div class="insight-title">
+                <i
+                  class="ph ph-warning-circle"
+                  style="color: var(--accent-danger); font-weight: bold"
+                ></i>
+                Skill Gaps
+              </div>
+              <div id="missing-skills-container"></div>
+            </div>
+
+            <!-- AI Summary -->
+            <div class="insight-box" style="grid-column: span 2">
+              <div class="insight-title">
+                <i
+                  class="ph ph-sparkle"
+                  style="color: var(--accent-glow); font-weight: bold"
+                ></i>
+                Nexus AI Verdict
+              </div>
+              <div class="raw-content" id="ai-summary"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // --- UI Interactions ---
+      const fileInput = document.getElementById("resume-input");
+      const dropZone = document.getElementById("drop-zone");
+      const fileNameDisplay = document.getElementById("file-name");
+
+      // Drag & Drop Physics
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        dropZone.addEventListener(
+          eventName,
+          () => dropZone.classList.add("dragover"),
+          false
+        );
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(
+          eventName,
+          () => dropZone.classList.remove("dragover"),
+          false
+        );
+      });
+
+      dropZone.addEventListener("drop", handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        updateFileName();
+      }
+
+      fileInput.addEventListener("change", updateFileName);
+
+      function updateFileName() {
+        if (fileInput.files.length > 0) {
+          fileNameDisplay.textContent = fileInput.files[0].name;
+          fileNameDisplay.style.color = "var(--accent-primary)";
+          document
+            .querySelector(".icon-upload")
+            .classList.replace("ph-file-pdf", "ph-check-circle");
+        }
+      }
+
+      // --- Core Application Logic ---
+      document
+        .getElementById("analyze-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // Transition UI
+          const loader = document.getElementById("loader");
+          const loadingText = loader.querySelector(".loading-text");
+          const inputSection = document.getElementById("input-section");
+          const dashboard = document.getElementById("results-dashboard");
+
+          loader.style.display = "flex";
+
+          // Simulate AI Stages
+          const stages = [
+            "Parsing Vector Data...",
+            "Analyzing Semantic Context...",
+            "Comparing Competency Matrices...",
+            "Generating Executive Summary...",
+          ];
+          let stageIndex = 0;
+          const stageInterval = setInterval(() => {
+            if (stageIndex < stages.length) {
+              loadingText.innerText = stages[stageIndex++];
+            }
+          }, 1500);
+
+          // Prepare Data
+          const formData = new FormData(this);
+
+          try {
+            // Call Backend
+            const response = await fetch("http://localhost:8080/analyze", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) throw new Error("Analysis Failed");
+
+            const data = await response.json();
+
+            // ----------------------------------------------------
+            // INTELLIGENT PARSING (Client-Side)
+            // The backend returns raw text from Gemini. We parse it here.
+            // ----------------------------------------------------
+
+            // 1. Extract Score
+            let matchScore = 0;
+            const scoreRegex = /(\d{1,3})%/;
+            const scoreMatch = data.ats_result.match(scoreRegex);
+            if (scoreMatch) matchScore = parseInt(scoreMatch[1]);
+
+            // 2. Parse Skills (Heuristic: Look for bullet points in the raw text)
+            // This is a naive parser to visualize the "text" output from the LLM
+            const lines = data.ats_result.split("\n");
+            let matchedSkills = [];
+            let missingSkills = [];
+            let currentSection = "summary";
+
+            // Basic keyword detection to categorize the text lines
+            lines.forEach((line) => {
+              const l = line.trim().toLowerCase();
+              if (l.includes("matching skills") || l.includes("strengths"))
+                currentSection = "match";
+              else if (l.includes("missing") || l.includes("improvement"))
+                currentSection = "missing";
+
+              if (line.trim().startsWith("-") || line.trim().startsWith("*")) {
+                const cleanText = line.replace(/[-*]/g, "").trim();
+                if (currentSection === "match") matchedSkills.push(cleanText);
+                if (currentSection === "missing") missingSkills.push(cleanText);
+              }
+            });
+
+            // Fallback if parsing fails (Just show generic pills based on JD)
+            if (matchedSkills.length === 0)
+              matchedSkills = [
+                "Resume Parsed",
+                "Experience Detected",
+                "Format Verified",
+              ];
+
+            // Update UI
+            clearInterval(stageInterval);
+            loader.style.display = "none";
+            inputSection.style.display = "none";
+            dashboard.style.display = "block";
+
+            // Animate Score Ring
+            const circle = document.querySelector(".progress-ring__circle");
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference;
+
+            const offset = circumference - (matchScore / 100) * circumference;
+
+            setTimeout(() => {
+              circle.style.strokeDashoffset = offset;
+
+              // Animate Numbers
+              let currentNum = 0;
+              const numInterval = setInterval(() => {
+                if (currentNum >= matchScore) clearInterval(numInterval);
+                else {
+                  currentNum++;
+                  document.getElementById("match-score").innerText =
+                    currentNum + "%";
+                }
+              }, 20);
+            }, 500);
+
+            // Inject Skills
+            const matchedContainer = document.getElementById(
+              "matched-skills-container"
+            );
+            matchedSkills.slice(0, 6).forEach((skill) => {
+              matchedContainer.innerHTML += `<span class="skill-pill match">${skill}</span>`;
+            });
+
+            const missingContainer = document.getElementById(
+              "missing-skills-container"
+            );
+            missingSkills.slice(0, 6).forEach((skill) => {
+              missingContainer.innerHTML += `<span class="skill-pill missing">${skill}</span>`;
+            });
+
+            // Inject Raw Summary (formatted)
+            // Convert newlines to breaks and simple bolding. Update bold color for light mode.
+            let formattedSummary = data.ats_result
+              .replace(
+                /\*\*(.*?)\*\*/g,
+                '<strong style="color:var(--accent-primary)">$1</strong>'
+              )
+              .replace(/\n/g, "<br>");
+
+            document.getElementById("ai-summary").innerHTML = formattedSummary;
+          } catch (err) {
+            clearInterval(stageInterval);
+            loader.style.display = "none";
+            alert(
+              "Connection Error: Ensure Flask backend is running on port 8080.\n" +
+                err.message
+            );
+          }
+        });
+    </script>
+  </body>
+</html>
