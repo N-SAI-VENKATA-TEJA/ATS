@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AURA | Neural Career Architect</title>
+    <title>LevelUp | Neural Career Architect</title>
 
     <!-- Premium Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -68,7 +68,7 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      /* Background Image Layer */
+      /* Background Video Layer */
       .neural-bg {
         position: fixed;
         top: 0;
@@ -76,7 +76,8 @@
         width: 100vw;
         height: 100vh;
         z-index: -2;
-        /* UPDATED: High-Definition (4K) Image of AI Robot Head with Neural Networks */
+        object-fit: cover; /* Ensures video scales perfectly to fill screen */
+        /* Fallback image while video loads */
         background-image: url("/static/Human_Intelligence.jpg");
         background-size: cover;
         background-position: center center;
@@ -716,7 +717,10 @@
   </head>
   <body>
     <!-- Neural Background Layer -->
-    <div class="neural-bg"></div>
+    <video id="bg-video" class="neural-bg" autoplay loop muted playsinline preload="auto">
+      <!-- Ensure your video is named video.mp4 and placed in the static folder -->
+      <source src="/static/video.mp4" type="video/mp4">
+    </video>
     <div class="bg-overlay"></div>
 
     <div class="container">
@@ -731,7 +735,7 @@
               font-size: 2rem;
             "
           ></i>
-          AURA
+          LevelUp
         </div>
         <div
           style="font-size: 0.9rem; color: var(--c-text-body); font-weight: 500"
@@ -771,7 +775,7 @@
                 max-width: 500px;
               "
             >
-              75% of resumes are rejected by bots. AURA uses
+              75% of resumes are rejected by bots. LevelUp uses
               <strong>Gemini Neural Networks</strong> to decode the black box
               and optimize your application.
             </p>
@@ -1024,7 +1028,7 @@
                     color: var(--c-text-body);
                   "
                 >
-                  We don't just 'Ctrl+F' your resume. AURA reads context.
+                  We don't just 'Ctrl+F' your resume. LevelUp reads context.
                   "Managing SQL databases" is mathematically linked to "Backend
                   Engineering" even if the exact words differ.
                 </p>
@@ -1258,7 +1262,7 @@
                     class="bar"
                     style="--h: 95%; background: var(--c-secondary)"
                   ></div>
-                  <span class="bar-label">AURA</span>
+                  <span class="bar-label">LevelUp</span>
                 </div>
               </div>
             </div>
@@ -1317,7 +1321,7 @@
           border-top: 1px solid rgba(255, 255, 255, 0.05);
         "
       >
-        <p>&copy; 2026 AURA Intelligence. Built for the Future of Work.</p>
+        <p>&copy; 2026 LevelUp Intelligence. Built for the Future of Work.</p>
       </footer>
     </div>
 
@@ -1721,6 +1725,8 @@
           formContent.style.display = "block";
         }
       });
+
+      // (Video scrubbing logic removed in favor of CSS-only infinite looping background)
     </script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify, render_template
-from google import genai
+from openai import OpenAI
 import PyPDF2
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -10,108 +10,80 @@ load_dotenv()  # Load environment variables from .env file
 # ==============================
 # CONFIG
 # ==============================
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# In-memory processing (no upload folder needed)
 
-api_key = os.getenv("API_KEY")
+api_key = os.getenv("NVIDIA_API_KEY")
 if not api_key:
-    raise ValueError("API_KEY is not set in the environment variables. Please check your .env file.")
-client = genai.Client(api_key=api_key)
+    raise ValueError("NVIDIA_API_KEY is not set in the environment variables. Please check your .env file.")
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key=api_key
+)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# No local uploads folder needed for in-memory processing
 
 # ==============================
 # HOME ROUTE (UI)
 # ==============================
 @app.route("/")
 def home():
-    return render_template("template3.html")
+    return render_template("index.html")
 
 # ==============================
 # PDF PARSING
 # ==============================
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(pdf_file):
     text = ""
-    with open(pdf_path, "rb") as file:
-        reader = PyPDF2.PdfReader(file)
-        for page in reader.pages:
-            text += page.extract_text() or ""
+    reader = PyPDF2.PdfReader(pdf_file)
+    for page in reader.pages:
+        text += page.extract_text() or ""
     return text
 
 # ==============================
-# RESUME PARSER (LLM)
+# COMBINED ATS ANALYSIS (LLM)
 # ==============================
-def parse_resume(resume_text):
+def analyze_resume_and_jd(resume_text, jd_text):
     prompt = f"""
-You are a resume parser.
+You are an expert Applicant Tracking System.
+I will provide you with a Resume and a Job Description.
+I need you to analyze them and provide 3 sections separated exactly by "===SECTION_SEPARATOR===".
 
-Extract:
-- Skills
-- Experience summary
-- Education
-- Tools & technologies
+Section 1: Parsed Resume
+Extract: Skills, Experience summary, Education, Tools & technologies (in bullet points)
+
+===SECTION_SEPARATOR===
+Section 2: Parsed Job Description
+Extract: Required skills, Responsibilities, Preferred qualifications (in bullet points)
+
+===SECTION_SEPARATOR===
+Section 3: ATS Match Result
+Provide: Match percentage (0-100), Matching skills, Missing skills, Strengths, Improvement suggestions
 
 Resume:
 {resume_text}
 
-Return in bullet points.
-"""
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-    return response.text
-
-# ==============================
-# JOB DESCRIPTION PARSER
-# ==============================
-def parse_job_description(jd_text):
-    prompt = f"""
-Extract:
-- Required skills
-- Responsibilities
-- Preferred qualifications
-
 Job Description:
 {jd_text}
-
-Return in bullet points.
 """
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
+    response = client.chat.completions.create(
+        model="minimaxai/minimax-m3",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=1,
+        top_p=0.95,
+        max_tokens=8192,
+        stream=False
     )
-    return response.text
-
-# ==============================
-# ATS MATCHING
-# ==============================
-def ats_match(parsed_resume, parsed_jd):
-    prompt = f"""
-You are an Applicant Tracking System.
-
-Compare the resume and job description.
-
-Resume:
-{parsed_resume}
-
-Job Description:
-{parsed_jd}
-
-Provide:
-1. Match percentage (0-100)
-2. Matching skills
-3. Missing skills
-4. Strengths
-5. Improvement suggestions
-"""
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-    return response.text
+    
+    content = response.choices[0].message.content
+    sections = content.split("===SECTION_SEPARATOR===")
+    
+    if len(sections) == 3:
+        return sections[0].strip(), sections[1].strip(), sections[2].strip()
+    else:
+        # Fallback if the model didn't perfectly use the separator
+        return "Failed to parse resume section cleanly.", "Failed to parse JD section cleanly.", content
 
 # ==============================
 # API ROUTE (PDF UPLOAD)
@@ -127,19 +99,11 @@ def analyze():
     if not jd_text:
         return jsonify({"error": "Job description is required"}), 400
 
-    # Save PDF
-    pdf_path = os.path.join(app.config["UPLOAD_FOLDER"], resume_file.filename)
-    resume_file.save(pdf_path)
+    # Extract resume text directly from memory
+    resume_text = extract_text_from_pdf(resume_file)
 
-    # Extract resume text
-    resume_text = extract_text_from_pdf(pdf_path)
-
-    # Parse using Gemini
-    parsed_resume = parse_resume(resume_text)
-    parsed_jd = parse_job_description(jd_text)
-
-    # ATS Matching
-    ats_result = ats_match(parsed_resume, parsed_jd)
+    # Parse and Match using single LLM call
+    parsed_resume, parsed_jd, ats_result = analyze_resume_and_jd(resume_text, jd_text)
 
     return jsonify({
         "parsed_resume": parsed_resume,
