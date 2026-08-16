@@ -1611,7 +1611,7 @@
         const formData = new FormData(form);
 
         try {
-          const response = await fetch("http://localhost:8080/analyze", {
+          const response = await fetch("/analyze", {
             method: "POST",
             body: formData,
           });
