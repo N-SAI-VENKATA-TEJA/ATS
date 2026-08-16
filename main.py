@@ -68,7 +68,7 @@ Job Description:
 {jd_text}
 """
     response = client.chat.completions.create(
-        model="minimaxai/minimax-m3",
+        model="meta/llama-3.1-8b-instruct",
         messages=[{"role": "user", "content": prompt}],
         temperature=1,
         top_p=0.95,
