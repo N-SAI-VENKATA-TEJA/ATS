@@ -64,8 +64,7 @@ Resume:
 Job Description:
 {jd_text}
 """
-    # Using Gemini 1.5 Flash as the default lightweight/fast model for parsing
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-3.5-flash-lite')
     
     response = model.generate_content(
         prompt,
