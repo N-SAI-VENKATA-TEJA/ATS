@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify, render_template
-from openai import OpenAI
+import google.generativeai as genai
 import PyPDF2
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -12,13 +12,10 @@ load_dotenv()  # Load environment variables from .env file
 # ==============================
 # In-memory processing (no upload folder needed)
 
-api_key = os.getenv("NVIDIA_API_KEY")
+api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    raise ValueError("NVIDIA_API_KEY is not set in the environment variables. Please check your .env file.")
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=api_key
-)
+    raise ValueError("GEMINI_API_KEY is not set in the environment variables. Please check your .env file.")
+genai.configure(api_key=api_key)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
@@ -67,16 +64,19 @@ Resume:
 Job Description:
 {jd_text}
 """
-    response = client.chat.completions.create(
-        model="meta/llama-3.1-8b-instruct",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=1,
-        top_p=0.95,
-        max_tokens=8192,
-        stream=False
+    # Using Gemini 1.5 Flash as the default lightweight/fast model for parsing
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    response = model.generate_content(
+        prompt,
+        generation_config=genai.types.GenerationConfig(
+            temperature=1.0,
+            top_p=0.95,
+            max_output_tokens=8192,
+        )
     )
     
-    content = response.choices[0].message.content
+    content = response.text
     sections = content.split("===SECTION_SEPARATOR===")
     
     if len(sections) == 3:
